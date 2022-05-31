@@ -1,0 +1,4 @@
+subir git push
+
+para actualizar el repo local 
+git pull
