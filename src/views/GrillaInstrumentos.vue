@@ -3,10 +3,20 @@
         <v-card-title>
             Instrumentos
             <v-spacer></v-spacer>
-            <v-text-field v-model="search" append-icon="mdi-magnify" label="preciomin" single-line hide-details>
-            </v-text-field>
-            <v-text-field v-model="search" append-icon="mdi-magnify" label="preciomax" single-line hide-details>
-            </v-text-field>
+            
+
+                <v-text-field type="number" id="preciomin" v-model="preciomin" placeholder="preciomin">
+                </v-text-field>
+                <v-text-field type="number" id="preciomax" v-model="preciomax" placeholder="preciomax"></v-text-field>
+                
+            
+            <!--    <form class="form-inline" >
+                <v-text-field v-model="search" append-icon="mdi-magnify" label="preciomin" single-line hide-details>
+                </v-text-field>
+                <v-text-field v-model="search" append-icon="mdi-magnify" label="preciomax" single-line hide-details>
+                </v-text-field>
+                
+            </form>-->
             <v-spacer></v-spacer>
             <v-btn color="primary" dark class="mb-2" v-bind="attrs" v-on="on" :href="'/Formulario/0'">
                 Cargar Nuevo
@@ -15,7 +25,7 @@
         <v-simple-table class="tabla">
             <template v-slot:default>
                 <thead>
-                    <tr>
+                    <tr>>
                         <th class="text-left">
                             <b>ID</b>
                         </th>
@@ -51,6 +61,7 @@
                 </thead>
                 <tbody>
                     <tr v-for="instrumento in instrumentosData" :key="instrumento.id" style="padding-top: 5px;">
+                 
                         <td>
                             {{ instrumento.id }}
                         </td>
@@ -95,6 +106,7 @@
                                 mdi-delete
                             </v-icon>
                         </td>
+                        
                     </tr>
                 </tbody>
             </template>
@@ -113,7 +125,8 @@ export default {
     },
     data() {
         return {
-            instrumentosData: []
+            instrumentosData: [],
+            instrumentosporprecio: []
         };
     },
     methods: {
@@ -124,6 +137,25 @@ export default {
             const resJson = await res.json();
             console.log(resJson);
             this.instrumentosData = resJson;
+        },
+
+        async filtrarporprecio(preciomin, preciomax) {
+
+            const res = await fetch(
+                "http://localhost:3000/instrumentos"
+            );
+            const resJson = await res.json();
+            console.log(resJson);
+            this.instrumentosData = resJson;
+
+            for (let i; i < this.instrumentosData.lenght; i++) {
+                if (Number(preciomin) <= Number(this.instrumentosData.precio) && Number(preciomax) >= Number(this.instrumentosData.precio)) {
+                    instrumentosporprecio.push(this.instrumentosData[i])
+                }
+            }
+            if (instrumentosporprecio.lenght > 0) {
+                this.instrumentosData = instrumentosporprecio
+            }
         },
 
         async deleteinstrumento(idinstrumento) {
@@ -156,5 +188,48 @@ export default {
 
 a {
     text-decoration: none;
+}
+
+.form-inline {
+    display: flex;
+    flex-flow: row wrap;
+    align-items: center;
+}
+
+.form-inline label {
+    margin: 5px 10px 5px 0;
+}
+
+/* Style the input fields */
+.form-inline input {
+    vertical-align: middle;
+    margin: 5px 10px 5px 0;
+    padding: 10px;
+    background-color: #fff;
+    border: 1px solid #ddd;
+}
+
+/* Style the submit button */
+.form-inline button {
+    padding: 10px 20px;
+    background-color: dodgerblue;
+    border: 1px solid #ddd;
+    color: white;
+}
+
+.form-inline button:hover {
+    background-color: royalblue;
+}
+
+/* Add responsiveness - display the form controls vertically instead of horizontally on screens that are less than 800px wide */
+@media (max-width: 800px) {
+    .form-inline input {
+        margin: 10px 0;
+    }
+
+    .form-inline {
+        flex-direction: column;
+        align-items: stretch;
+    }
 }
 </style>
