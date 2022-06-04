@@ -1,3 +1,4 @@
+//https://www.youtube.com/watch?v=0lSVtJHCcMA
 import Vue from 'vue'
 import VueRouter, { RouteConfig } from 'vue-router'
 import HomeView from '../views/HomeView.vue'

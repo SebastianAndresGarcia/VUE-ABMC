@@ -3,29 +3,42 @@
         <v-card-title>
             Instrumentos
             <v-spacer></v-spacer>
-            
+            <!--  <v-text-field type="number" id="preciomin" v-model="preciomin" placeholder="preciomin">
+            </v-text-field>
+            <v-text-field type="number" id="preciomax" v-model="preciomax" placeholder="preciomax"></v-text-field>
+-->
+            <v-row justify="center">
+                <form>
+                    <v-row>
+                        <v-col cols="12" sm="6" md="4">
+                            <v-text-field type="number" placeholder="ingresevalor" label="preciomin" v-model="preciomin"
+                                required></v-text-field>
+                        </v-col>
+                        <v-col cols="12" sm="6" md="4">
+                            <v-text-field type="number" placeholder="ingresevalor" label="preciomax" v-model="preciomax"
+                                required></v-text-field>
+                        </v-col>
+                        <v-col cols="6" sm="3" md="2">
+                            <v-btn dark small @click="filtrarporprecio(preciomin, preciomax)">
+                                Filtrar
+                            </v-btn>
+                            <v-btn dark small :href="'./GrillaInstrumentos'">
+                                Limpiar
+                            </v-btn>
+                        </v-col>
+                    </v-row>
+                </form>
+            </v-row>
 
-                <v-text-field type="number" id="preciomin" v-model="preciomin" placeholder="preciomin">
-                </v-text-field>
-                <v-text-field type="number" id="preciomax" v-model="preciomax" placeholder="preciomax"></v-text-field>
-                
-            
-            <!--    <form class="form-inline" >
-                <v-text-field v-model="search" append-icon="mdi-magnify" label="preciomin" single-line hide-details>
-                </v-text-field>
-                <v-text-field v-model="search" append-icon="mdi-magnify" label="preciomax" single-line hide-details>
-                </v-text-field>
-                
-            </form>-->
             <v-spacer></v-spacer>
-            <v-btn color="primary" dark class="mb-2" v-bind="attrs" v-on="on" :href="'/Formulario/0'">
+            <v-btn color="primary" dark class="mb-2" :href="'/Formulario/0'">
                 Cargar Nuevo
             </v-btn>
         </v-card-title>
         <v-simple-table class="tabla">
             <template v-slot:default>
                 <thead>
-                    <tr>>
+                    <tr>
                         <th class="text-left">
                             <b>ID</b>
                         </th>
@@ -61,7 +74,7 @@
                 </thead>
                 <tbody>
                     <tr v-for="instrumento in instrumentosData" :key="instrumento.id" style="padding-top: 5px;">
-                 
+
                         <td>
                             {{ instrumento.id }}
                         </td>
@@ -106,7 +119,7 @@
                                 mdi-delete
                             </v-icon>
                         </td>
-                        
+
                     </tr>
                 </tbody>
             </template>
@@ -126,7 +139,8 @@ export default {
     data() {
         return {
             instrumentosData: [],
-            instrumentosporprecio: []
+            preciomax: undefined,
+            preciomin: undefined
         };
     },
     methods: {
@@ -144,18 +158,24 @@ export default {
             const res = await fetch(
                 "http://localhost:3000/instrumentos"
             );
-            const resJson = await res.json();
-            console.log(resJson);
-            this.instrumentosData = resJson;
-
-            for (let i; i < this.instrumentosData.lenght; i++) {
-                if (Number(preciomin) <= Number(this.instrumentosData.precio) && Number(preciomax) >= Number(this.instrumentosData.precio)) {
-                    instrumentosporprecio.push(this.instrumentosData[i])
+            console.log("preciomin" + preciomin)
+            console.log("preciomax" + Number(preciomax))
+            //this.instrumentosData = resJson;
+            //if (Number(preciomax) != null && Number(preciomax) != NaN && Number(preciomax) != 0) {
+            //this.instrumentosData = resJson;
+            if (Number(preciomax) > 0&&Number(preciomin)>0) {
+                const resJson = await res.json();
+                console.log("funcion filtrar ", resJson);
+                this.instrumentosData.splice(0, this.instrumentosData.length);
+                for (let i of resJson) {
+                    if (Number(preciomin) <= Number(i.precio) && Number(preciomax) >= Number(i.precio)) {
+                        this.instrumentosData.push(i)
+                    }
                 }
-            }
-            if (instrumentosporprecio.lenght > 0) {
-                this.instrumentosData = instrumentosporprecio
-            }
+            } else //if (Number(preciomax) == undefined || Number(preciomax) == 0 || Number(preciomax) == null || this.instrumentosData.length == 0) {
+                window.location.reload();
+            
+
         },
 
         async deleteinstrumento(idinstrumento) {
